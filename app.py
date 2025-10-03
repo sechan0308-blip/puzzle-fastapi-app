@@ -16,7 +16,7 @@ from db import init_db, get_session, Guestbook
 
 # ---------- 환경 변수 ----------
 load_dotenv()
-APP_TITLE     = os.getenv("SITE_TITLE", "Event Project")
+APP_TITLE     = os.getenv("SITE_TITLE", "진실을 찾아라")
 ACCOUNT_TEXT  = os.getenv("ACCOUNT_TEXT", "은행 000-00-000000 (예금주)")
 SESSION_SECRET= os.getenv("SESSION_SECRET", "dev-secret")
 ADMIN_PASS    = os.getenv("ADMIN_PASS", "changeme")

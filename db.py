@@ -1,6 +1,7 @@
 from sqlmodel import SQLModel, Field, create_engine, Session
 from typing import Optional
 from datetime import datetime
+import os
 
 DB_URL = os.getenv("DB_URL", "sqlite:///./app.db")
 engine = create_engine(DB_URL, connect_args={"check_same_thread": False})
