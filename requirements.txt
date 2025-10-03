@@ -4,3 +4,4 @@ sqlmodel
 jinja2
 python-dotenv
 itsdangerous
+python-multipart
