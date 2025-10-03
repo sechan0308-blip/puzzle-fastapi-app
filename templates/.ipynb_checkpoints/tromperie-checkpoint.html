@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <title>Tromperie</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <style>
+    body { background:#fff; }
+    .frame{ min-height:80vh; display:grid; place-items:center; padding:24px }
+    .panel{
+      display:grid; gap:18px; width:100%; max-width:860px;
+      padding:34px 28px; border-radius:24px;
+      background: rgba(255,255,255,.85);
+      backdrop-filter: blur(4px);
+      box-shadow: 0 16px 40px rgba(0,0,0,.06);
+    }
+    .title{
+      text-align:center; font-weight:900;
+      font-size: clamp(26px, 4.6vw, 44px); letter-spacing:-.01em;
+    }
+    .subtitle{
+      text-align:center; color:#7a7a7a; margin-top:-4px;
+      font-size: clamp(12px,1.6vw,14px)
+    }
+    .divider{
+      height:1px; border:0;
+      background: linear-gradient(90deg, rgba(0,0,0,0), rgba(220,20,20,.35), rgba(0,0,0,0));
+      margin: 6px 0 2px;
+    }
+    .btn-primary{
+      display:inline-block; padding:11px 18px; border-radius:12px; font-weight:700;
+      text-decoration:none; color:#fff;
+      background: radial-gradient(120% 180% at 50% 0%, #2b2b2b 0%, #1f1f1f 100%);
+      border:1px solid rgba(220,20,20,.25);
+      box-shadow: 0 8px 20px rgba(0,0,0,.2);
+      transition: transform .12s ease, box-shadow .25s ease, background .25s ease;
+    }
+    .btn-primary:hover{
+      transform: translateY(-1px);
+      background: radial-gradient(120% 180% at 50% 0%, #2f0c0c 0%, #180a0a 100%);
+      box-shadow: 0 12px 28px rgba(0,0,0,.25), 0 0 16px rgba(220,20,20,.35);
+    }
+    .donate{
+      border:1px solid rgba(220,20,20,.22);
+      border-radius:16px; padding:16px;
+      background: linear-gradient(180deg, rgba(255,255,255,.9), rgba(255,245,245,.9));
+    }
+        /* === Mobile (portrait) === */
+    @media (max-width: 480px){
+      .panel{ padding: 22px 18px; border-radius: 18px; }
+      .title{ font-size: 24px; letter-spacing: 0; }
+      .subtitle{ font-size: 12px; }
+      .divider{ margin: 4px 0 0; }
+      .formbox{ padding: 14px; border-radius: 14px; }
+      .btn-primary{ width:100%; padding: 12px 18px; border-radius: 12px; }
+      #guestbook h2{ font-size: 18px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="frame">
+    <section class="panel">
+      <header>
+        <h1 class="title">거짓된 진실</h1>
+        <p class="subtitle">당신이 본 것이 전부일까요?</p>
+        <hr class="divider">
+      </header>
+
+      {% if error %}<div class="alert">{{ error }}</div>{% endif %}
+
+      <section class="formbox" style="margin-top:4px">
+        <h2>방명록 남기기 ✍️</h2>
+        <form method="post" action="/sign">
+          <input type="hidden" name="redirect" value="/tromperie">
+          <!-- 허니팟(봇 차단) -->
+          <input type="text" name="website" style="display:none" tabindex="-1" autocomplete="off">
+
+          <label>이름
+            <input type="text" name="name" maxlength="30" required>
+          </label>
+          <label>메시지
+            <textarea name="message" maxlength="500" rows="4" required></textarea>
+          </label>
+          <button type="submit" class="btn-primary">남기기</button>
+        </form>
+        <p class="help">※ 광고/욕설/스팸성 글은 삭제될 수 있어요.</p>
+      </section>
+
+      <section id="guestbook" class="guestbook">
+        <h2>방명록</h2>
+        <ul>
+          {% for e in entries %}
+            <li>
+              <div class="meta">
+                <strong>{{ e.name }}</strong>
+                <span>{{ e.created_at.strftime("%Y-%m-%d %H:%M:%S") }} UTC</span>
+              </div>
+              <p>{{ e.message }}</p>
+            </li>
+          {% else %}
+            <li>아직 방명록이 없어요. 첫 응원자가 되어주세요!</li>
+          {% endfor %}
+        </ul>
+      </section>
+
+      <section class="donate">
+        <h2>후원 안내</h2>
+        <p>다양한 이벤트 기획을 위해 후원을 받습니다.</p>
+        <p class="account"><strong>{{ account_text }}</strong></p>
+      </section>
+    </section>
+  </main>
+</body>
+</html>

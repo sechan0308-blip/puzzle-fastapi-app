@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8"><title>관리 패널</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <main class="wrap">
+    <h1>관리 패널</h1>
+    <p><a href="/admin/logout">로그아웃</a></p>
+    <table style="width:100%; border-collapse:collapse">
+      <thead>
+        <tr><th style="text-align:left">ID</th><th>이름</th><th>메시지</th><th>작성시각(UTC)</th><th></th></tr>
+      </thead>
+      <tbody>
+        {% for e in entries %}
+        <tr style="border-top:1px solid #eee">
+          <td>{{ e.id }}</td>
+          <td>{{ e.name }}</td>
+          <td>{{ e.message }}</td>
+          <td>{{ e.created_at.strftime("%Y-%m-%d %H:%M:%S") }}</td>
+          <td>
+            <form method="post" action="/admin/delete" onsubmit="return confirm('삭제할까요?')">
+              <input type="hidden" name="id" value="{{ e.id }}">
+              <button type="submit">삭제</button>
+            </form>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="5">작성된 방명록이 없습니다.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </main>
+</body>
+</html>

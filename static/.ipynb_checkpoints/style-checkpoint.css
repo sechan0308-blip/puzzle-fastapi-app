@@ -1,0 +1,83 @@
+/* ---- clue page ---- */
+.center-screen{
+  min-height: 80vh;
+  display: grid;
+  place-items: center;
+  text-align: center;
+}
+
+.clue-headline{
+  font-weight: 800;
+  line-height: 1.15;
+  /* 화면 크기에 따라 자연스럽게 커지게 */
+  font-size: clamp(28px, 6vw, 56px);
+  letter-spacing: -0.02em;
+  margin-bottom: -100px;
+}
+
+.clue-sub{
+  color: #7a7a7a;
+  font-size: clamp(12px, 1.6vw, 14px);
+  margin-top: 2px;
+}
+
+/* 의미심장한 버튼 느낌 */
+.btn-ominous{
+  display: inline-block;
+  margin-top: 60px;
+  padding: 12px 22px;
+  border-radius: 14px;
+  text-decoration: none;
+  font-weight: 700;
+  letter-spacing: .04em;
+  /* 어두운 베이스 + 붉은 기운 */
+  background: radial-gradient(120% 180% at 50% 0%, #2b2b2b 0%, #1f1f1f 100%);
+  color: #fff;
+  border: 1px solid rgba(255,0,0,0.22);
+  box-shadow:
+    0 6px 16px rgba(0,0,0,.22),
+    0 0 0px rgba(220,10,10,0); /* hover 시 붉은 글로우로 전환 */
+  transition: transform .12s ease, box-shadow .25s ease, filter .25s ease, background .25s ease;
+}
+
+.btn-ominous:hover{
+  transform: translateY(-1px);
+  box-shadow:
+    0 10px 24px rgba(0,0,0,.25),
+    0 0 18px rgba(220,10,10,.35); /* 붉은빛 글로우 */
+  filter: saturate(1.1);
+  background: radial-gradient(120% 180% at 50% 0%, #2f0c0c 0%, #1a0c0c 100%);
+}
+
+.btn-ominous:active{
+  transform: translateY(0);
+}
+
+/* 모션 민감 사용자 배려 */
+@media (prefers-reduced-motion: reduce){
+  .btn-ominous{ transition: none }
+  .btn-ominous:hover{ transform:none; box-shadow: 0 6px 16px rgba(0,0,0,.22) }
+}
+
+/* ---- Mobile-friendly base tweaks ---- */
+:root{
+  --space: 24px;
+}
+html,body{
+  padding-left: max(0px, env(safe-area-inset-left));
+  padding-right: max(0px, env(safe-area-inset-right));
+  padding-bottom: max(0px, env(safe-area-inset-bottom));
+}
+.wrap{ padding: var(--space); }
+img{ max-width:100%; height:auto; display:block; }
+button{ min-height:44px; touch-action:manipulation; }
+input, textarea, select{ font-size:16px; } /* iOS 자동 줌 방지 */
+
+/* guestbook 리스트 모바일에서 여백 살짝 줄이기 */
+@media (max-width: 480px){
+  :root{ --space: 16px; }
+  .formbox{ padding: 14px; border-radius: 14px; }
+  .guestbook li{ margin:8px 0; padding:12px; border-radius:12px; }
+  .meta{ font-size: 13px; }
+  .help{ font-size: 12px; }
+}

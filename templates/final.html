@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <title>Finale</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <style>
+    /* 페이지 톤: 하얀 배경(JS가 시간에 따라 붉게 보정) */
+    body { background:#fff; transition: background-color .25s ease; }
+
+    .final-frame{
+      min-height: 80vh;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      text-align: center;
+    }
+    .panel{
+      display: grid;
+      gap: 16px;
+      padding: 34px 28px;
+      border-radius: 24px;
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: blur(4px);
+      box-shadow: 0 14px 36px rgba(0,0,0,.06);
+      max-width: 780px;
+      width: 100%;
+    }
+
+    .title{
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      font-size: clamp(20px, 3.6vw, 30px);
+    }
+
+    .timer{
+      font-size: clamp(30px, 7vw, 56px);
+      font-weight: 900;
+      letter-spacing: .08em;
+      line-height: 1;
+    }
+    /* 마지막 10초, 심장박동 느낌 */
+    .timer.danger { animation: pulse 0.9s infinite; }
+    @keyframes pulse {
+      0%{ transform: scale(1) }
+      50%{ transform: scale(1.04) }
+      100%{ transform: scale(1) }
+    }
+
+
+    .buttons{
+      display:flex;
+      gap:12px;
+      justify-content:center;
+      flex-wrap:wrap;
+      margin-top: 4px;
+    }
+
+    /* 의미심장한 ‘Tromperie’ */
+    .btn-decoy{
+      display:inline-block;
+      padding: 12px 22px;
+      border-radius: 14px;
+      text-decoration: none;
+      font-weight: 700;
+      letter-spacing: .04em;
+      background: radial-gradient(120% 180% at 50% 0%, #2b2b2b 0%, #1f1f1f 100%);
+      color:#fff;
+      border:1px solid rgba(255,0,0,0.22);
+      box-shadow: 0 8px 20px rgba(0,0,0,.22);
+      transition: transform .12s ease, box-shadow .25s ease, background .25s ease;
+    }
+    .btn-decoy:hover{
+      transform: translateY(-1px);
+      box-shadow: 0 12px 28px rgba(0,0,0,.25), 0 0 16px rgba(220,20,20,.35);
+      background: radial-gradient(120% 180% at 50% 0%, #2f0c0c 0%, #180a0a 100%);
+    }
+    .btn-decoy:active{ transform: translateY(0) }
+
+    /* 진실 버튼은 시간이 지나야 드러남 */
+    .btn-truth{
+      display:inline-block;
+      padding: 12px 22px;
+      border-radius: 14px;
+      text-decoration: none;
+      font-weight: 700;
+      letter-spacing:.04em;
+      color:#111;
+      background:#fff;
+      border:1.5px solid rgba(0,0,0,.22);
+      box-shadow: 0 8px 20px rgba(0,0,0,.06);
+      transition: transform .12s ease, box-shadow .25s ease, border-color .25s ease, opacity .6s ease, transform .6s ease;
+      opacity: 0; transform: translateY(8px); pointer-events:none;
+    }
+    .btn-truth.show{
+      opacity: 1; transform: translateY(0); pointer-events:auto;
+      border-color: rgba(0,0,0,.32);
+    }
+    .btn-truth:hover{ transform: translateY(-1px); box-shadow: 0 12px 28px rgba(0,0,0,.1) }
+    .btn-truth:active{ transform: translateY(0) }
+
+    @media (prefers-reduced-motion: reduce){
+      .timer.danger{ animation: none }
+      .btn-decoy, .btn-truth{ transition: none }
+    }
+    /* === Mobile (portrait) === */
+    @media (max-width: 480px){
+      .panel{ padding: 22px 18px; border-radius: 18px; }
+      .title{ font-size: 18px; letter-spacing: 0; }
+      .timer{ font-size: 42px; }
+      .morse{ font-size: 13.5px; padding: 12px 12px; border-radius: 12px; }
+      .buttons{ flex-direction: column; gap: 10px; }
+      .btn-decoy, .btn-truth{ width:100%; padding: 12px 18px; border-radius: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="final-frame">
+    <section class="panel">
+      <h1 class="title">Attendez!</h1>
+      <div id="timer" class="timer">00:30</div>
+
+      <div class="buttons">
+        <a href="/tromperie" class="btn-decoy" aria-label="Tromperie 페이지로">Tromperie</a>
+        <a href="/verite" id="veriteBtn" class="btn-truth" aria-label="Vérité 페이지로">Vérité</a>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // 30초 카운트다운 + 하양 -> 빨강 배경 보정
+    const total = 30;
+    let remain = total;
+    const timerEl = document.getElementById('timer');
+    const verite = document.getElementById('veriteBtn');
+
+    const fmt = s => {
+      const m = Math.floor(s/60), r = Math.floor(s%60);
+      return String(m).padStart(2,'0') + ':' + String(Math.max(0,r)).padStart(2,'0');
+    };
+
+    let last = performance.now();
+    function step(ts){
+      const dt = (ts - last) / 1000; last = ts;
+      remain -= dt;
+      if (remain < 0) remain = 0;
+
+      // 배경색: progress 0(하양) → 1(강한 빨강)
+      const progress = Math.min(1, (total - remain) / total);
+      const l = 100 - 50*progress; // 100%(white) -> 50%
+      const s = 0 + 100*progress;   // 0% -> 100%
+      document.body.style.backgroundColor = `hsl(0 ${s}% ${l}%)`;
+
+      // 타이머 텍스트
+      timerEl.textContent = fmt(remain);
+      if (remain <= 10) timerEl.classList.add('danger');
+
+      // 종료 시 Vérité 버튼 등장
+      if (remain <= 0){
+        verite.classList.add('show');
+        return;
+      }
+      requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  </script>
+</body>
+</html>

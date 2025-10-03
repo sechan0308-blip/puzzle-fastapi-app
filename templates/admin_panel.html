@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8"><title>관리 패널</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body{ background:#fff }
+    .wrap{ max-width:960px; margin:0 auto; padding:24px }
+    .title{ font-weight:900; font-size:clamp(22px,4.4vw,32px); margin-bottom:6px }
+    table{ width:100%; border-collapse:collapse; background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 12px 28px rgba(0,0,0,.06) }
+    thead th{ text-align:left; background:#fafafa; border-bottom:1px solid #eee; padding:10px }
+    tbody td{ padding:10px; border-top:1px solid #f1f1f1; vertical-align:top }
+    .btn-del{ padding:8px 12px; border-radius:10px; background:#b00020; color:#fff; border:0; cursor:pointer }
+    .alert{ background:#fff9e6; color:#7a6200; padding:10px 12px; border-radius:8px; margin:12px 0 }
+    @media (max-width: 640px){
+      .wrap{ padding:16px }
+      table{ font-size:14px }
+      .btn-del{ width:100% }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <div class="title">관리 패널</div>
+    {% if error %}<div class="alert">{{ error }}</div>{% endif %}
+    <p style="margin-bottom:12px"><a href="/admin/logout">로그아웃</a></p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>이름</th>
+          <th>메시지</th>
+          <th>작성시각(UTC)</th>
+          <th style="width:120px"></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for e in entries %}
+        <tr>
+          <td>{{ e.id }}</td>
+          <td>{{ e.name }}</td>
+          <td>{{ e.message }}</td>
+          <td>{{ e.created_at.strftime("%Y-%m-%d %H:%M:%S") }}</td>
+          <td>
+            <form method="post" action="/admin/delete" onsubmit="return confirm('삭제할까요?')">
+              <input type="hidden" name="id" value="{{ e.id }}">
+              <!-- CSRF -->
+              <input type="hidden" name="csrf" value="{{ csrf_token(request) }}">
+              <button type="submit" class="btn-del">삭제</button>
+            </form>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="5" style="text-align:center; padding:18px">작성된 방명록이 없습니다.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </main>
+</body>
+</html>
+
